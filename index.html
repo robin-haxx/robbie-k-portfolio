@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/>
+        <title>𝚛𝚘𝚋𝚋𝚒𝚎 𝚔</title>
+        <link rel="icon" href="fav.png">
+        <script language="javascript" type="text/javascript" src="lib/p5.js"></script>
+        <script language="javascript" type="text/javascript" src="lib/p5.dom.js"></script>
+        <script language="javascript" type="text/javascript" src="lib/p5.sound.js"></script>
+        <script language="javascript" type="text/javascript" src="lib/taira.js"></script>
+        <script language="javascript" type="text/javascript" src="system_settings.js"></script>
+
+        <style>
+            body, html {
+                margin: 0;
+                padding: 0;
+                height: 100%;
+            }
+            #p5_loading {
+                display: none;
+            }
+            #sketch-container {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+            }
+            #content {
+                position: relative;
+                z-index: 1;
+                color: white;
+                padding: 20px;
+            }
+            p {
+                color: black;
+            }
+        </style>
+        <!-- <script language="javascript" type="text/javascript" src="music_GAMEOFLIFE.js"></script> -->
+   
+    <!-- <script language="javascript" type="text/javascript" src="home.js"></script> -->
+        
+        <link href="home.css" rel="stylesheet">
+    </head>
+    <body>
+        <!-- <div class="hero" id="hero">
+            
+                    <div class="heading">
+                        <div class="heading__line-1">
+                        Kia ora, I'm 
+                        <span>Robbie</span>
+                        .
+                        </div>
+                        <div class="heading__line-2">I design things with nature.</div>
+                        <a href="#about" class="heading__link">
+                            <div class="heading-cta">
+                                
+                                See My Work ...
+                            </div>
+                        </a>
+                    </div>
+        </div> -->
+                    <div id="sketch-container"></div>
+                    <div class="outer">
+
+                        
+                    </div>
+            
+
+        <nav class="navigation-bar" >
+            <ul class="navigation">
+
+                <li class="navigation__item navigation__item--active" id="nav-about">
+                    <a href="#about">About</a>
+                </li>
+                <li class="navigation__item" id="nav-projects">
+                    <a href="#projects">Projects</a>
+                </li>
+                <li class="navigation__item" id="nav-contact">
+                    <a href="#contact">Contact</a>
+                </li>
+            </ul>
+        </nav>
+
+        <div>
+            <script language="javascript" type="text/javascript" src="system_runner.js"></script>
+            <script  src="home.js"></script>
+            
+        </div>
+
+        <section class="about" id="about">
+            
+            <div class="heading__line-1">
+                <br><br>Kia ora, I'm 
+                <span>Robbie</span>
+                .
+            </div>
+            <div class="heading__line-2">I design things with nature.</div>
+                
+            <h2 class="about__heading section-heading">Outlook ←   → Knowledge</h2>
+            <div class="about__content">
+                <div class="profile">
+                    <div class="profile__picture">
+                        <img src="meP.png"width="200" height="200">
+
+                    </div>
+                    <p class="profile__blurb">My background is in spatial
+                        design, and I am drawn to all sorts 
+                        of traditional + digital mediums.
+                        My work explores possibilities to make the digital
+                        world a little more organic.<br>
+                        I use design to highlight different
+                        perspectives, and aim to shine light on a
+                        deeper understanding of our natural world.</p>
+                </div>
+                <div class="skills">
+                    <div class="skills__row">
+                        <div class="skills__item skills__item--html">
+                            <img src="imgs/logo_js.png" alt=""/>
+                            <div class="skills__item-name">JAVASCRIPT</div>
+                        </div>
+                        <div class="skills__item skills__item--react">
+                            <img src="imgs/logo_html.png" alt=""/>
+                            <div class="skills__item-name">HTML + CSS + SQL</div>
+                        </div>
+                        <div class="skills__item skills__item--npm">
+                            <img src="imgs/logo_git.png" alt=""/>
+                            <div class="skills__item-name">GIT + GITHUB</div>
+                        </div>
+                    </div>
+                    <div class="skills__row">
+                        <div class="skills__item skills__item--js">
+                            <img src="imgs/logo_ps.png" alt=""/>
+                            <div class="skills__item-name">PHOTOSHOP</div>
+                        </div>
+                        <div class="skills__item skills__item--css">
+                            <img src="imgs/logo_Id.png" alt=""/>
+                            <div class="skills__item-name">INDESIGN</div>
+                        </div>
+                        <div class="skills__item skills__item--python">
+                            <img src="imgs/logo_Ai.png" alt=""/>
+                            <div class="skills__item-name">ILLUSTRATOR</div>
+                        </div>
+                        <div class="skills__item skills__item--git">
+                            <img src="imgs/logo_365.png" alt=""/>
+                            <div class="skills__item-name">OFFICE 365</div>
+                        </div>
+                    </div>
+                    <div class="skills__row">
+                        <div class="skills__item skills__item--sass">
+                            <img src="imgs/logo_td.png" alt=""/>
+                            <div class="skills__item-name">TOUCHDESIGNER</div>
+                        </div>
+                        <div class="skills__item skills__item--webpack">
+                            <img src="imgs/logo_skp.png" alt=""/>
+                            <div class="skills__item-name">SKETCHUP</div>
+                        </div>
+                        <div class="skills__item skills__item--r">
+                            <img src="imgs/logo_revit.png" alt=""/>
+                            <div class="skills__item-name">REVIT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="projects" id="projects">
+            <h2 class="projects__heading section-heading">Projects</h2>
+            <!-- <div class="project project-left"> -->
+                <!-- <a href="https://lifeinvadersocial.herokuapp.com/" target="_blank"> -->
+
+
+                    <!-- update names -->
+                    <!-- <div class="project__image-container weather">
+                        <div class="project__image-image">
+                            <img src="imgs/lifeinvader.c25acb0a33904bc4e90c656d87c651cc.png" alt=""/>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- put a project in here -->
+            
+                <div class="project__info">
+                    <h3 class="project__title">
+                        Cell Visualizer<br/>JavaScript + p5.js system
+                    </h3>
+                    <p class="project__description">What's running in the background, but better; 
+                        <br>An audio-responsive representation of cell replication, using Conway's game of life algorithm. 
+                        <br>This also expands upon a p5.js system for visualizing audio data, developed by VUW; adding more functionality.</p>
+                    <a href="https://robin-haxx.github.io/cellVisualizer/" target="_blank">
+                        <div class="project__live-2">Run the app in browser</div>
+                    </a>
+                    <a href="https://github.com/robin-haxx/cellVisualizer" target="_blank">
+                        <div class="project__live-2">See the code</div>
+                    </a>
+                </div>
+            
+            
+
+
+            <div class="project project-left">
+                <a href="https://23-mddn342.github.io/randomised-collection-robin-haxx/index.html" target="_blank">
+                    <div class="project__image-container retro">
+                        <div class="project__image-image">
+                            <img src="imgs/moa.png" alt=""/>
+                        </div>
+                    </div>
+                </a>
+                <div class="project__info">
+                    <h3 class="project__title">
+                        Moa diagram<br/>Natural history data visualization
+                    </h3>
+                    <p class="project__description">A visualization of Aotaroa's prehistoric Moa populations.<br/>Developed for the "rule of birds" ecosim.</p>
+                    <a href="https://23-mddn342.github.io/randomised-collection-robin-haxx/index.html" target="_blank">
+                        <div class="project__live-2">See the sketch</div>
+                    </a>
+                    <a href="https://ruleofbirds.blog/post/747994168372101120/%F0%9D%9A%8D%F0%9D%9A%8E%F0%9D%9A%9F%F0%9D%9A%95%F0%9D%9A%98%F0%9D%9A%90%F0%9D%9F%B6%F0%9D%9F%B8%F0%9D%9F%B7" target="_blank">
+                        <div class="project__live-2">Read the blog</div>
+                    </a>
+                </div>
+            </div> 
+
+                        <div class="project project-right">
+                <div class="project__info">
+                    <h3 class="project__title">
+                        // TO-DO<br/>Productivity App
+                    </h3>
+                    <p class="project__description">Keep track of tasks with custom project folders and notes.</p>
+                    <a href="https://bscottnz.github.io/todo/" target="_blank">
+                        <div class="project__live-2">live app</div>
+                    </a>
+                    <a href="https://github.com/bscottnz/todo" target="_blank">
+                        <div class="project__live-2">learn more</div>
+                    </a>
+                </div>
+                <a href="https://bscottnz.github.io/todo/" target="_blank">
+                    <div class="project__image-container todo">
+                        <div class="project__image-image">
+                            <img src="imgs/todo.af05ff37bdc5302d22530d5631e136cd.png" alt=""/>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+
+            <!-- put a project in here -->
+            <div class="project project-left">
+                <a href="https://bscottnz.github.io/esketch/" target="_blank">
+                    <div class="project__image-container retro">
+                        <div class="project__image-image">
+                            <img src="imgs/retro.d5a0a58727affa92cb80fdfa78a07a26.png" alt=""/>
+                        </div>
+                    </div>
+                </a>
+                <div class="project__info">
+                    <h3 class="project__title">
+                        Retro-Sketch<br/>Pixel Sketch App
+                    </h3>
+                    <p class="project__description">Create pixel art with a variety of drawing tools.</p>
+                    <a href="https://bscottnz.github.io/esketch/" target="_blank">
+                        <div class="project__live-2">Live app</div>
+                    </a>
+                    <a href="https://github.com/bscottnz/esketch" target="_blank">
+                        <div class="project__live-2">learn more</div>
+                    </a>
+                </div>
+            </div> 
+
+
+
+
+            <!-- put a project in here -->
+            <div class="project project-right">
+                <div class="project__info">
+                    <h3 class="project__title">
+                        Fractal tree<br/>Composition tool
+                    </h3>
+                    <p class="project__description">A first foray into interactive code art.</p>
+                    <a href="https://robin-haxx.github.io/treeSite/" target="_blank">
+                        <div class="project__live-2">Run the app</div>
+                    </a>
+                    <a href="https://github.com/robin-haxx/treeSite" target="_blank">
+                        <div class="project__live-2">See the code</div>
+                    </a>
+                </div>
+                <a href="https://robin-haxx.github.io/treeSite/" target="_blank">
+                    <div class="project__image-container todo">
+                        <div class="project__image-image">
+                            <img src="imgs/p_tree.png" alt=""/>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            
+
+
+        </section>  
+
+        <section class="contact" id="contact">
+            <h2 class="contact__heading section-heading">Contact</h2>
+            <p class="contact__text">Have a question or want to work together? Leave your details and I'll get back to you as soon as possible.</p>
+            <form class="contact__form" action="mailto:kinnairdrobbie@gmail.com" >
+                <input class="contact__form-name" name="name" placeholder="Name"/>
+                <input class="contact__form-email" type="email" name="_replyto" placeholder="Email"/>
+                <textarea class="contact__form-message" name="message" placeholder="Message"></textarea>
+                <div class="contact__form-error-submit">
+                    <div class="form-error">
+                        <div class="form-error__name">Please enter your name.</div>
+                        <div class="form-error__email">Please enter a valid email.</div>
+                        <div class="form-error__msg">Please enter a message.</div>
+                    </div>
+                    <button type="button" class="contact__form-submit-2 project__live-2" id="form-submit">Submit</button>
+                </div>
+            </form>
+        </section>
+        <footer class="footer">
+            <a href="#hero">
+                <div class="return-home">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 24 24">
+                        <title></title>
+                        <path fill="#fafafa" d="M17.707 10.293l-5-5c-0.391-0.391-1.024-0.391-1.414 0l-5 5c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0l4.293-4.293 4.293 4.293c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414zM17.707 17.293l-5-5c-0.391-0.391-1.024-0.391-1.414 0l-5 5c-0.391 0.391-0.391 1.024 0 1.414s1.024 0.391 1.414 0l4.293-4.293 4.293 4.293c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414z"></path>
+                    </svg>
+                </div>
+            </a>
+            <div class="socials">
+                <a href="https://github.com/bscottnz" target="_blank">
+                    <div class="socials__github">
+                        <img src="imgs/github-logo.d03ce87cf6b5a432c44f847eefec1204.png" alt=""/>
+                    </div>
+                </a>
+                <a href="mailto:kinnairdrobbie@gmail.com" target="_blank">
+                    <div class="socials__email">
+                        <img src="imgs/mail.4f2db89278f9ad3abef627211b414574.png" alt=""/>
+                    </div>
+                </a>
+            </div>
+            <p class="copyright">PAGE STRUCTURE: BEN SCOTT ©2021. </p><p>This accreditation will update when I've adapted this homepage to a transformative degree.</p>
+        </footer>
+    </body>
+</html>
