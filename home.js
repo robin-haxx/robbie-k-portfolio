@@ -71,6 +71,8 @@ let maxRes = 50;
 
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   // maybe update this + other menu options to update on reselection instead of each frame
+
+    
   colourTheme = 0;
 
   ellipseMode(CENTER);
@@ -343,6 +345,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   } else  {
     console.log(`invalid style option: ${colourTheme}`);
   }
+
   //debugInfo();
 }
 
