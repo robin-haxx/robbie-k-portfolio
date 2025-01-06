@@ -1345,11 +1345,12 @@ button {
 .retro {
     display: flex;
     align-items: flex-end;
-    justify-content: center
+    justify-content: center;
 }
 
 .retro img {
     margin-bottom: -3px
+   
 }
 
 .todo {
