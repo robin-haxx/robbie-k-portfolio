@@ -8,8 +8,8 @@ let phaseCheck = false;
 let bassFade = false; // bass-driven "ghost" effect. uses alpha; can eat performance.
 let fadeMax = 150; // when bassfade is true, lower value means more "ghosting"
 
-let gridX = 20;
-let gridY = 20;
+let gridX = 5;
+let gridY = 5;
 let cellsX;
 let cellsY;
 
@@ -38,11 +38,18 @@ let appleSize;
 let sceneDuration = 130; // counter ticks (60/second) each scene lasts. supports updating during playback scope.
 let maxRes = 50;
 
-// PRE-CREATED COLOR OBJECTS (performance boost - created once instead of every frame)
+// PRE-CREATED COLOR OBJECTS 
 let whiteCol, whiteColAlpha, whiteColHighAlpha, appleCol, greenCol, yellowCol, blackCol, creamCol, greyCol, greyColTwo;
 
 // Track if colors have been initialized
 let colorsInitialized = false;
+
+// Pre-allocated arrays and cached values
+let nextGrid;
+let aliveColTheme0;
+let aliveColTheme1;
+let cachedBgColor;
+let lastDeadCol = null;
 
 // ===== SETUP COLORS (called once on first frame) =====
 function setupColors() {
@@ -58,6 +65,9 @@ function setupColors() {
   creamCol = color(255, 255, 230);
   greyCol = color(220, 220, 220);
   greyColTwo = color(180, 180, 100);
+  
+  aliveColTheme0 = [whiteCol, greyColTwo, blackCol, greyCol];
+  aliveColTheme1 = [yellowCol, greenCol, creamCol, blackCol];
   
   colorsInitialized = true;
 }
@@ -107,7 +117,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     //resolution = 20;
     sceneDuration = 130;
     //let aliveCol = [yellowCol,greenCol,creamCol,blackCol];
-    let aliveCol = [whiteCol, greyColTwo, blackCol, greyCol];
+    let aliveCol = aliveColTheme0;
 
     let resMap = map(other, 0, 100, 80, 10, true); //unused
     let colShift = map(drum, 0, 100, 0, 2, true);
@@ -138,13 +148,12 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       cols = round(canvasWidth / resolution); //very important to round these to account for math error in dividing canvas
       rows = round(canvasHeight / resolution);
       grid = make2DArray(cols, rows);
+      nextGrid = make2DArray(cols, rows);
+      
+      let threshold = drum > 60 ? 0.5 : 0.125;
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-          if (drum > 60) {
-            grid[i][j] = Math.floor(random(2));
-          } else {
-            grid[i][j] = random() < 0.125 ? 1 : 0;
-          }
+          grid[i][j] = random() < threshold ? 1 : 0;
         }
       }
       firstRun = false;
@@ -159,57 +168,77 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       background(deadCol);
     }
 
+    // Pre-calculate appleSize once per frame
+    if (vocal > 60) {
+      appleSize = random(0.6, 1);
+    } else if (vocal > 50) {
+      appleSize = random(0.5, 0.8);
+    } else if (vocal > 40) {
+      appleSize = 0.5;
+    } else if (vocal > 20) {
+      appleSize = random(0.3, 0.4);
+    } else {
+      appleSize = 0.2;
+    }
+
+    // Pre-calculate constants
+    const resMinusOne = resolution - 1;
+    const resMinusFour = resolution - 4;
+    const bassMapWeight = bassMap * 0.1;
+    const vocalWeight = 0.01 * vocal;
+    const bassMapWeight2 = 0.2 * bassMap;
+    const rectSize1 = resMinusOne * appleSize * 1.1;
+    const rectSize2 = resMinusFour * 2;
+    const rectSize3 = resMinusOne * 3;
+    const rectSize4 = resMinusOne * 40 * bassMap;
+    const drawExtraRects = drum < 65 || bass < 38;
+    const drawInnerRect = (drum > 55 && drum < 65) || (bass > 28 && bass < 38);
+
+    // Draw all alive cells
+    fill(shiftedCol);
+    stroke(colWhite);
+    strokeWeight(0.1);
+    
     for (let i = 0; i < cols; i++) {
+      let x = i * resolution;
       for (let j = 0; j < rows; j++) {
-        let x = i * resolution;
-        let y = j * resolution;
         if (grid[i][j] == 1) {
-          push();
+          let y = j * resolution;
           //fill(aliveCol[current]);
-          fill(shiftedCol);
-          if (vocal > 60) {
-            appleSize = random(0.6, 1);
-          } else if (vocal > 50) {
-            appleSize = random(0.5, 0.8);
-          } else if (vocal > 40) {
-            appleSize = 0.5;
-          } else if (vocal > 20) {
-            appleSize = random(0.3, 0.4);
-          } else {
-            appleSize = 0.2;
-          }
           //stroke(bass*5);
 
           //strokeWeight(drum/40)
           //circle(x,y,((resolution+5)* appleSize))
-          rect(x, y, (resolution - 1) * appleSize * 1.1);
-          stroke(colWhite);
-          strokeWeight(0.1);
+          rect(x, y, rectSize1);
           noFill();
-          rect(x, y, (resolution - 4) * 2);
+          rect(x, y, rectSize2);
 
-          strokeWeight(bassMap * 0.1);
-          rect(x, y, (resolution - 1) * 3);
-          if (drum < 65 || bass < 38) {
+          strokeWeight(bassMapWeight);
+          rect(x, y, rectSize3);
+          
+          if (drawExtraRects) {
             stroke(bass);
-            strokeWeight(0.01 * vocal);
+            strokeWeight(vocalWeight);
             // line(x - 50, y, x + 50, y);
             // line(x, y - 50, x, y + 50);
-            if ((drum > 55 && drum < 65) || (bass > 28 && bass < 38)) {
-              strokeWeight(0.2 * bassMap);
+            if (drawInnerRect) {
+              strokeWeight(bassMapWeight2);
               stroke(whiteColAlpha);
-              rect(x, y, (resolution - 1) * 40 * bassMap);
+              rect(x, y, rectSize4);
             }
           }
-
-          pop();
+          
+          // Reset for next cell
+          fill(shiftedCol);
+          stroke(colWhite);
+          strokeWeight(0.1);
         }
       }
     }
 
-    let next = make2DArray(cols, rows);
-
     // Compute next based on grid
+    const shouldDrawHighBass = bass > 80;
+    
     for (let i = 0; i < cols; i++) {
       for (let j = 0; j < rows; j++) {
         let state = grid[i][j];
@@ -218,20 +247,17 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
         let neighbours = countNeighbours(grid, i, j);
 
         if (state == 0) {
-          let rand = random();
-          if (rand < 0.001) {
+          if (random() < 0.001) {
             state = 1;
           }
         }
 
         if (state == 0 && neighbours == 3) {
-          stroke(whiteColHighAlpha);
-          if (bass > 80) {
-            push();
+          if (shouldDrawHighBass) {
+            stroke(whiteColHighAlpha);
             strokeWeight(0.1);
             noFill();
-            rect(i * resolution, j * resolution, (resolution - 1) * 4);
-            pop();
+            rect(i * resolution, j * resolution, resMinusOne * 4);
           }
           // line(
           //   i * resolution - 20,
@@ -245,22 +271,24 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
           //   i * resolution,
           //   j * resolution + 20,
           // );
-          next[i][j] = 1;
+          nextGrid[i][j] = 1;
         } else if (state == 1 && (neighbours < 2 || neighbours > 3)) {
           //addSize -=1;
 
-          next[i][j] = 0;
+          nextGrid[i][j] = 0;
         } else {
           //addSize -=1;
 
-          next[i][j] = state;
+          nextGrid[i][j] = state;
         }
       }
     }
 
     // iterates the GOL based on a rate that is the product of audio activity
     if (frameCount % 16 == 0) {
-      grid = next;
+      let temp = grid;
+      grid = nextGrid;
+      nextGrid = temp;
     }
   } else if (colourTheme == 1) {
     deadCol = colBlack;
@@ -268,7 +296,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     maxRes = 50;
     sceneDuration = 240;
 
-    let aliveCol = [yellowCol, greenCol, creamCol, blackCol];
+    let aliveCol = aliveColTheme1;
     let colShift = map(drum, 0, 100, 0, 0.8, true);
 
     let shiftedCol = lerpColor(appleCol, aliveCol[current], colShift);
@@ -289,9 +317,10 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       cols = round(canvasWidth / resolution);
       rows = round(canvasHeight / resolution);
       grid = make2DArray(cols, rows);
+      nextGrid = make2DArray(cols, rows);
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-          grid[i][j] = Math.floor(random(2));
+          grid[i][j] = random() < 0.5 ? 1 : 0;
         }
       }
       firstRun = false;
@@ -301,24 +330,27 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     let bgColor = color(deadCol[0], deadCol[1], deadCol[2], bassFadeAlpha);
     background(bgColor);
 
+    // Pre-calculate sizes
+    const resPlusFive = resolution + 5;
+    const resMinusOne = resolution - 1;
+    
+    fill(shiftedCol);
+    //stroke(bass*5);
+    noStroke();
+    
     for (let i = 0; i < cols; i++) {
+      let x = i * resolution;
       for (let j = 0; j < rows; j++) {
-        let x = i * resolution;
-        let y = j * resolution;
         if (grid[i][j] == 1) {
+          let y = j * resolution;
           //fill(aliveCol[current]);
-          fill(shiftedCol);
           appleSize = random(0, 0.1);
-          //stroke(bass*5);
-          noStroke();
           //strokeWeight(drum/40)
-          circle(x, y, (resolution + 5) * appleSize);
-          rect(x, y, (resolution - 1) * appleSize);
+          circle(x, y, resPlusFive * appleSize);
+          rect(x, y, resMinusOne * appleSize);
         }
       }
     }
-
-    let next = make2DArray(cols, rows);
 
     // Compute next based on grid
     for (let i = 0; i < cols; i++) {
@@ -329,23 +361,24 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
         let neighbours = countNeighbours(grid, i, j);
 
         if (state == 0) {
-          let rand = random();
-          if (rand < 0.125) {
+          if (random() < 0.125) {
             state = 1;
           }
         }
         if (state == 0 && neighbours == 3) {
-          next[i][j] = 1;
+          nextGrid[i][j] = 1;
         } else if (state == 1 && (neighbours < 2 || neighbours > 3)) {
-          next[i][j] = 0;
+          nextGrid[i][j] = 0;
         } else {
-          next[i][j] = state;
+          nextGrid[i][j] = state;
         }
       }
     }
     // iterates the GOL based on a rate that is the product of audio activity
     if (frameCount % 8 == 0) {
-      grid = next;
+      let temp = grid;
+      grid = nextGrid;
+      nextGrid = temp;
     }
   } else {
     console.log(`invalid style option: ${colourTheme}`);
@@ -357,7 +390,7 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
 // constructor for cell array (current and next)
 function make2DArray(cols, rows) {
   let arr = new Array(cols);
-  for (let i = 0; i < arr.length; i++) {
+  for (let i = 0; i < cols; i++) {
     arr[i] = new Array(rows);
   }
   return arr;
@@ -366,10 +399,19 @@ function make2DArray(cols, rows) {
 // check how many current "active/alive" neighbours a cell has, return int sum to decide how it advances in next
 function countNeighbours(grid, x, y) {
   let sum = 0;
+  let colsMinusOne = cols - 1;
+  let rowsMinusOne = rows - 1;
+  
   for (let i = -1; i < 2; i++) {
+    let col = x + i;
+    if (col < 0) col = colsMinusOne;
+    else if (col >= cols) col = 0;
+    
     for (let j = -1; j < 2; j++) {
-      let col = (x + i + cols) % cols;
-      let row = (y + j + rows) % rows;
+      let row = y + j;
+      if (row < 0) row = rowsMinusOne;
+      else if (row >= rows) row = 0;
+      
       sum += grid[col][row];
     }
   }
