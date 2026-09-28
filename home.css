@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap); @import url(https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap); *,*::before,*::after {
+@import url(https://fonts.googleapis.com/css2?family=Cascadia+Code:wght@300;400;500;600;700&display=swap); @import url(https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap); @import url(https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap); *,*::before,*::after {
     margin: 0;
     padding: 0;
     box-sizing: inherit
@@ -43,7 +43,7 @@ html {
 body {
     min-height: 100vh;
     color: #303030;
-    font-family: cascadia code, sans-serif;
+    font-family: "Cascadia Code", monospace;
     background-color: #fafafa;
     overflow-x: hidden
 }
@@ -553,7 +553,7 @@ button {
     color: inherit;
     background-color: #b1b1b1;
     font-size: 1.6rem;
-    font-family: monserrat, sans-serif;
+    font-family: "Montserrat", sans-serif;
     border-left: 2px solid transparent;
     border-radius: 0
 }
