@@ -1,5 +1,8 @@
 
 
+// the unminified p5.js validates every call's arguments (Friendly Error System); that's a big per-frame cost
+p5.disableFriendlyErrors = true;
+
 let playlist = Math.floor(Math.random()); //mult by 2 when playlist 2 works
 let firstLoad = false;
 
@@ -45,7 +48,7 @@ function preload() {
   console.log("writing song data for song " + songID);
   song = songs[songID];  
   console.log("loading words " + songID);
-  words = loadStrings('words.txt'); //anything containing "words" is deprecated, just empty variables, will remove when I can be bothered
+  //words = loadStrings('words.txt'); //deprecated + unused; skipping it avoids delaying setup on an extra request
   console.log("preload complete");
 }
 
@@ -55,10 +58,12 @@ let volume_length = 0;
 function setup() {
   console.log("setting up canvas");
   
-  let main_canvas = createCanvas(canvasSize[0], canvasSize[1]);
+  // background effect: render at 1 canvas pixel per CSS pixel so hi-dpi screens (phones, iPads, retina) don't fill 4-9x the pixels
+  pixelDensity(1);
+  let main_canvas = createCanvas(window.innerWidth, window.innerHeight);
   main_canvas.parent('sketch-container');
   
-  frameRate(100);
+  frameRate(30);
   angleMode(DEGREES);
 
 
@@ -70,8 +75,6 @@ console.log("running unnecessary function: switchRunMode");
 }
 
 function draw() {
-
-  canvasSize = [window.innerWidth,window.innerHeight];
 
   if (editorMode) {
     //let w = textInput.value();

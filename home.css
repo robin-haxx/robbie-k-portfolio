@@ -926,8 +926,6 @@ button {
     height: 6rem;
     border-bottom: 2px solid rgb(75, 148, 103);
     background-color: rgba(223, 223, 223, 0.95);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 12px 4px rgba(139, 139, 139, 0.3);
     z-index: 99999999999
 }

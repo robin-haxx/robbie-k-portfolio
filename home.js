@@ -8,14 +8,11 @@ let phaseCheck = false;
 let bassFade = false; // bass-driven "ghost" effect. uses alpha; can eat performance.
 let fadeMax = 150; // when bassfade is true, lower value means more "ghosting"
 
-let gridX = 5;
-let gridY = 5;
-let cellsX;
-let cellsY;
-
+// grid is a flat Uint8Array indexed [i * rows + j] (column-major, matches the old grid[i][j])
 let grid;
-let cols;
-let rows;
+let nextGrid;
+let cols = 0;
+let rows = 0;
 let resolution = 20; //are default res values necessary anymore? could give some options to user tbh
 
 // need to refactor colour storage if I build a full style tool suite. Should be fun.
@@ -28,33 +25,31 @@ let colCream = [255, 255, 230];
 let colBlack = [255, 255, 255];
 let colYellow = [213, 219, 15];
 
-//let aliveCol = [colGreen,colYellow,colBlack,colCream];
 let deadCol = colWhite;
 let current = 0;
-let addSize = 0;
 
 let appleSize;
 
 let sceneDuration = 130; // counter ticks (60/second) each scene lasts. supports updating during playback scope.
 let maxRes = 50;
 
-// PRE-CREATED COLOR OBJECTS 
+// GOL generations advance on wall-clock time so the speed doesn't depend on the display's refresh rate.
+// (previously: every 16 frames at ~60fps)
+const STEP_MS_THEME0 = 16 * 1000 / 60;
+const STEP_MS_THEME1 = 8 * 1000 / 60;
+let lastStepTime = 0;
+
+// PRE-CREATED COLOR OBJECTS
 let whiteCol, whiteColAlpha, whiteColHighAlpha, appleCol, greenCol, yellowCol, blackCol, creamCol, greyCol, greyColTwo;
-
-// Track if colors have been initialized
 let colorsInitialized = false;
-
-// Pre-allocated arrays and cached values
-let nextGrid;
 let aliveColTheme0;
 let aliveColTheme1;
-let cachedBgColor;
-let lastDeadCol = null;
+const colWhiteCss = `rgb(${colWhite[0]},${colWhite[1]},${colWhite[2]})`;
 
 // ===== SETUP COLORS (called once on first frame) =====
 function setupColors() {
   if (colorsInitialized) return;
-  
+
   whiteCol = color(75, 148, 103, 50);
   whiteColAlpha = color(0, 0, 0, 200);
   whiteColHighAlpha = color(0, 0, 0, 50);
@@ -65,22 +60,114 @@ function setupColors() {
   creamCol = color(255, 255, 230);
   greyCol = color(220, 220, 220);
   greyColTwo = color(180, 180, 100);
-  
+
   aliveColTheme0 = [whiteCol, greyColTwo, blackCol, greyCol];
   aliveColTheme1 = [yellowCol, greenCol, creamCol, blackCol];
-  
+
   colorsInitialized = true;
 }
 
+// ===== GRID =====
+
+// (re)build the grid for the current canvas size + resolution, seeding cells with the given density.
+// If keepExisting is true, cells that still fit are carried over (used on window resize) so the pattern doesn't reset.
+function buildGrid(density, keepExisting) {
+  const newCols = max(1, round(width / resolution)); //very important to round these to account for math error in dividing canvas
+  const newRows = max(1, round(height / resolution));
+  const newGrid = new Uint8Array(newCols * newRows);
+
+  for (let i = 0; i < newCols; i++) {
+    for (let j = 0; j < newRows; j++) {
+      if (keepExisting && grid && i < cols && j < rows) {
+        newGrid[i * newRows + j] = grid[i * rows + j];
+      } else {
+        newGrid[i * newRows + j] = Math.random() < density ? 1 : 0;
+      }
+    }
+  }
+
+  cols = newCols;
+  rows = newRows;
+  grid = newGrid;
+  nextGrid = new Uint8Array(cols * rows);
+}
+
+// advance one generation of Conway's GOL (wrapping edges), with a chance of spontaneous births
+function stepGrid(birthChance) {
+  const g = grid;
+  const n = nextGrid;
+  const r = rows;
+  const lastCol = cols - 1;
+  const lastRow = rows - 1;
+
+  for (let i = 0; i < cols; i++) {
+    const cL = (i === 0 ? lastCol : i - 1) * r;
+    const cM = i * r;
+    const cR = (i === lastCol ? 0 : i + 1) * r;
+
+    for (let j = 0; j < r; j++) {
+      const up = j === 0 ? lastRow : j - 1;
+      const down = j === lastRow ? 0 : j + 1;
+
+      const neighbours =
+        g[cL + up] + g[cL + j] + g[cL + down] +
+        g[cM + up] + g[cM + down] +
+        g[cR + up] + g[cR + j] + g[cR + down];
+
+      let state = g[cM + j];
+      if (state === 0 && Math.random() < birthChance) {
+        state = 1;
+      }
+
+      if (state === 0 && neighbours === 3) {
+        n[cM + j] = 1;
+      } else if (state === 1 && (neighbours < 2 || neighbours > 3)) {
+        n[cM + j] = 0;
+      } else {
+        n[cM + j] = state;
+      }
+    }
+  }
+
+  grid = n;
+  nextGrid = g;
+}
+
+function maybeStep(stepMs, birthChance) {
+  const now = millis();
+  if (now - lastStepTime >= stepMs) {
+    lastStepTime = now;
+    stepGrid(birthChance);
+  }
+}
+
+// add a centred square (rectMode CENTER equivalent) to the current path
+function addSquare(ctx, x, y, size) {
+  const h = size / 2;
+  ctx.rect(x - h, y - h, size, size);
+}
+
+// ===== CANVAS =====
+
 // reserves space for screen size changes, fully regens cells when phaseShift is triggered
 function refreshCanvas() {
-  clear();
-  
   canvasWidth = window.innerWidth;
   canvasHeight = window.innerHeight;
-  
-  console.log(canvasWidth, canvasHeight);
-  resizeCanvas(canvasWidth, canvasHeight);
+  if (width !== canvasWidth || height !== canvasHeight) {
+    resizeCanvas(canvasWidth, canvasHeight);
+  }
+}
+
+// debounced so dragging the window / mobile URL bar showing+hiding doesn't thrash the grid
+let resizeTimer = null;
+function windowResized() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    refreshCanvas();
+    if (!firstRun) {
+      buildGrid(0.125, true);
+    }
+  }, 150);
 }
 
 // quick value display for music data, sans advanced timing tools
@@ -95,31 +182,24 @@ function debugInfo(counter, vocal, drum, bass, other) {
   pop();
 }
 
-// function windowResized() {
-//   resizeCanvas(windowWidth, windowHeight);
-// }
-
 function draw_one_frame(words, vocal, drum, bass, other, counter) {
   // maybe update this + other menu options to update on reselection instead of each frame
   if (!colorsInitialized) {
     setupColors();
   }
-  
+
   colourTheme = 0;
 
-  ellipseMode(CENTER);
-  rectMode(CENTER);
+  // drawing below goes straight to the 2D context in a handful of batched paths,
+  // instead of thousands of individual p5 rect() calls per frame.
+  const ctx = drawingContext;
 
-  // next steps: move as much out of these statements as possible to preserve individual changes, start building other themes
   if (colourTheme == 0) {
     deadCol = colBlack;
     maxRes = 50;
-    //resolution = 20;
     sceneDuration = 130;
-    //let aliveCol = [yellowCol,greenCol,creamCol,blackCol];
     let aliveCol = aliveColTheme0;
 
-    let resMap = map(other, 0, 100, 80, 10, true); //unused
     let colShift = map(drum, 0, 100, 0, 2, true);
     let bassMap = map(vocal, 0, 100, 0, 0.5, true);
 
@@ -139,36 +219,20 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
 
     if (firstRun || phaseCheck) {
       refreshCanvas();
-
-      // push();
-      // fill(deadCol);
-      // noStroke();
-      // rect(canvasWidth/2,canvasHeight/2,canvasWidth,canvasHeight)
-      // pop();
-      cols = round(canvasWidth / resolution); //very important to round these to account for math error in dividing canvas
-      rows = round(canvasHeight / resolution);
-      grid = make2DArray(cols, rows);
-      nextGrid = make2DArray(cols, rows);
-      
-      let threshold = drum > 60 ? 0.5 : 0.125;
-      for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-          grid[i][j] = random() < threshold ? 1 : 0;
-        }
-      }
+      buildGrid(drum > 60 ? 0.5 : 0.125, false);
+      lastStepTime = millis();
       firstRun = false;
       phaseCheck = false;
     }
 
     if (bassFade) {
       let bassFadeAlpha = map(bass, 0, 100, fadeMax, 0, true);
-      let bgColor = color(deadCol[0], deadCol[1], deadCol[2], bassFadeAlpha);
-      background(bgColor);
+      background(deadCol[0], deadCol[1], deadCol[2], bassFadeAlpha);
     } else {
       background(deadCol);
     }
 
-    // Pre-calculate appleSize once per frame
+    // appleSize once per frame
     if (vocal > 60) {
       appleSize = random(0.6, 1);
     } else if (vocal > 50) {
@@ -181,118 +245,70 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
       appleSize = 0.2;
     }
 
-    // Pre-calculate constants
     const resMinusOne = resolution - 1;
     const resMinusFour = resolution - 4;
-    const bassMapWeight = bassMap * 0.1;
-    const vocalWeight = 0.01 * vocal;
-    const bassMapWeight2 = 0.2 * bassMap;
     const rectSize1 = resMinusOne * appleSize * 1.1;
     const rectSize2 = resMinusFour * 2;
     const rectSize3 = resMinusOne * 3;
     const rectSize4 = resMinusOne * 40 * bassMap;
-    const drawExtraRects = drum < 65 || bass < 38;
     const drawInnerRect = (drum > 55 && drum < 65) || (bass > 28 && bass < 38);
 
-    // Draw all alive cells
-    fill(shiftedCol);
-    stroke(colWhite);
-    strokeWeight(0.1);
-    
+    // one pass over the grid builds every layer's path
+    const pathFill = new Path2D();  // small filled core
+    const pathThin = new Path2D();  // core outline + middle square
+    const pathOuter = new Path2D(); // large faint square
+    const pathInner = drawInnerRect ? new Path2D() : null;
+
     for (let i = 0; i < cols; i++) {
-      let x = i * resolution;
+      const x = i * resolution;
+      const col = i * rows;
       for (let j = 0; j < rows; j++) {
-        if (grid[i][j] == 1) {
-          let y = j * resolution;
-          //fill(aliveCol[current]);
-          //stroke(bass*5);
-
-          //strokeWeight(drum/40)
-          //circle(x,y,((resolution+5)* appleSize))
-          rect(x, y, rectSize1);
-          noFill();
-          rect(x, y, rectSize2);
-
-          strokeWeight(bassMapWeight);
-          rect(x, y, rectSize3);
-          
-          if (drawExtraRects) {
-            stroke(bass);
-            strokeWeight(vocalWeight);
-            // line(x - 50, y, x + 50, y);
-            // line(x, y - 50, x, y + 50);
-            if (drawInnerRect) {
-              strokeWeight(bassMapWeight2);
-              stroke(whiteColAlpha);
-              rect(x, y, rectSize4);
-            }
-          }
-          
-          // Reset for next cell
-          fill(shiftedCol);
-          stroke(colWhite);
-          strokeWeight(0.1);
+        if (grid[col + j] === 1) {
+          const y = j * resolution;
+          addSquare(pathFill, x, y, rectSize1);
+          addSquare(pathThin, x, y, rectSize2);
+          addSquare(pathOuter, x, y, rectSize3);
+          if (pathInner) addSquare(pathInner, x, y, rectSize4);
         }
       }
     }
 
-    // Compute next based on grid
-    const shouldDrawHighBass = bass > 80;
-    
-    for (let i = 0; i < cols; i++) {
-      for (let j = 0; j < rows; j++) {
-        let state = grid[i][j];
-        // Count live neighbors!
-        let sum = 0;
-        let neighbours = countNeighbours(grid, i, j);
+    ctx.fillStyle = shiftedCol.toString();
+    ctx.fill(pathFill);
 
-        if (state == 0) {
-          if (random() < 0.001) {
-            state = 1;
+    ctx.strokeStyle = colWhiteCss;
+    ctx.lineWidth = 0.1;
+    ctx.stroke(pathFill);
+    ctx.stroke(pathThin);
+
+    ctx.lineWidth = bassMap * 0.1;
+    ctx.stroke(pathOuter);
+
+    if (pathInner) {
+      ctx.lineWidth = 0.2 * bassMap;
+      ctx.strokeStyle = whiteColAlpha.toString();
+      ctx.stroke(pathInner);
+    }
+
+    // birth flashes on heavy bass
+    if (bass > 80) {
+      const pathBirth = new Path2D();
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          if (grid[i * rows + j] === 0 && countNeighbours(grid, i, j) === 3) {
+            addSquare(pathBirth, i * resolution, j * resolution, resMinusOne * 4);
           }
-        }
-
-        if (state == 0 && neighbours == 3) {
-          if (shouldDrawHighBass) {
-            stroke(whiteColHighAlpha);
-            strokeWeight(0.1);
-            noFill();
-            rect(i * resolution, j * resolution, resMinusOne * 4);
-          }
-          // line(
-          //   i * resolution - 20,
-          //   j * resolution,
-          //   i * resolution + 20,
-          //   j * resolution,
-          // );
-          // line(
-          //   i * resolution,
-          //   j * resolution - 20,
-          //   i * resolution,
-          //   j * resolution + 20,
-          // );
-          nextGrid[i][j] = 1;
-        } else if (state == 1 && (neighbours < 2 || neighbours > 3)) {
-          //addSize -=1;
-
-          nextGrid[i][j] = 0;
-        } else {
-          //addSize -=1;
-
-          nextGrid[i][j] = state;
         }
       }
+      ctx.lineWidth = 0.1;
+      ctx.strokeStyle = whiteColHighAlpha.toString();
+      ctx.stroke(pathBirth);
     }
 
     // iterates the GOL based on a rate that is the product of audio activity
-    if (frameCount % 16 == 0) {
-      let temp = grid;
-      grid = nextGrid;
-      nextGrid = temp;
-    }
+    maybeStep(STEP_MS_THEME0, 0.001);
   } else if (colourTheme == 1) {
     deadCol = colBlack;
-    //resolution = 20;
     maxRes = 50;
     sceneDuration = 240;
 
@@ -314,72 +330,37 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
     }
 
     if (firstRun || phaseCheck) {
-      cols = round(canvasWidth / resolution);
-      rows = round(canvasHeight / resolution);
-      grid = make2DArray(cols, rows);
-      nextGrid = make2DArray(cols, rows);
-      for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-          grid[i][j] = random() < 0.5 ? 1 : 0;
-        }
-      }
+      refreshCanvas();
+      buildGrid(0.5, false);
+      lastStepTime = millis();
       firstRun = false;
       phaseCheck = false;
     }
     let bassFadeAlpha = map(bass, 0, 100, 100, 0, true);
-    let bgColor = color(deadCol[0], deadCol[1], deadCol[2], bassFadeAlpha);
-    background(bgColor);
+    background(deadCol[0], deadCol[1], deadCol[2], bassFadeAlpha);
 
-    // Pre-calculate sizes
     const resPlusFive = resolution + 5;
     const resMinusOne = resolution - 1;
-    
-    fill(shiftedCol);
-    //stroke(bass*5);
-    noStroke();
-    
+    const path = new Path2D();
+
     for (let i = 0; i < cols; i++) {
-      let x = i * resolution;
+      const x = i * resolution;
       for (let j = 0; j < rows; j++) {
-        if (grid[i][j] == 1) {
-          let y = j * resolution;
-          //fill(aliveCol[current]);
-          appleSize = random(0, 0.1);
-          //strokeWeight(drum/40)
-          circle(x, y, resPlusFive * appleSize);
-          rect(x, y, resMinusOne * appleSize);
+        if (grid[i * rows + j] === 1) {
+          const y = j * resolution;
+          const s = Math.random() * 0.1;
+          const r = (resPlusFive * s) / 2;
+          path.moveTo(x + r, y);
+          path.arc(x, y, r, 0, Math.PI * 2);
+          addSquare(path, x, y, resMinusOne * s);
         }
       }
     }
+    ctx.fillStyle = shiftedCol.toString();
+    ctx.fill(path);
 
-    // Compute next based on grid
-    for (let i = 0; i < cols; i++) {
-      for (let j = 0; j < rows; j++) {
-        let state = grid[i][j];
-        // Count live neighbors!
-        let sum = 0;
-        let neighbours = countNeighbours(grid, i, j);
-
-        if (state == 0) {
-          if (random() < 0.125) {
-            state = 1;
-          }
-        }
-        if (state == 0 && neighbours == 3) {
-          nextGrid[i][j] = 1;
-        } else if (state == 1 && (neighbours < 2 || neighbours > 3)) {
-          nextGrid[i][j] = 0;
-        } else {
-          nextGrid[i][j] = state;
-        }
-      }
-    }
     // iterates the GOL based on a rate that is the product of audio activity
-    if (frameCount % 8 == 0) {
-      let temp = grid;
-      grid = nextGrid;
-      nextGrid = temp;
-    }
+    maybeStep(STEP_MS_THEME1, 0.125);
   } else {
     console.log(`invalid style option: ${colourTheme}`);
   }
@@ -387,34 +368,14 @@ function draw_one_frame(words, vocal, drum, bass, other, counter) {
   //debugInfo();
 }
 
-// constructor for cell array (current and next)
-function make2DArray(cols, rows) {
-  let arr = new Array(cols);
-  for (let i = 0; i < cols; i++) {
-    arr[i] = new Array(rows);
-  }
-  return arr;
-}
-
-// check how many current "active/alive" neighbours a cell has, return int sum to decide how it advances in next
-function countNeighbours(grid, x, y) {
+// check how many current "active/alive" neighbours a cell has (wrapping edges)
+function countNeighbours(g, x, y) {
   let sum = 0;
-  let colsMinusOne = cols - 1;
-  let rowsMinusOne = rows - 1;
-  
-  for (let i = -1; i < 2; i++) {
-    let col = x + i;
-    if (col < 0) col = colsMinusOne;
-    else if (col >= cols) col = 0;
-    
-    for (let j = -1; j < 2; j++) {
-      let row = y + j;
-      if (row < 0) row = rowsMinusOne;
-      else if (row >= rows) row = 0;
-      
-      sum += grid[col][row];
+  for (let di = -1; di < 2; di++) {
+    const col = ((x + di + cols) % cols) * rows;
+    for (let dj = -1; dj < 2; dj++) {
+      sum += g[col + ((y + dj + rows) % rows)];
     }
   }
-  sum -= grid[x][y];
-  return sum;
+  return sum - g[x * rows + y];
 }
