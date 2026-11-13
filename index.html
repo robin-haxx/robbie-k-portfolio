@@ -3,8 +3,22 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width,initial-scale=1"/>
-        <title>𝚛𝚘𝚋𝚋𝚒𝚎 𝚔</title>
-        <link rel="icon" href="fav.png">
+        <title>Robbie K | Ecology games and installations from Aotearoa</title>
+        <meta name="description" content="Robbie K designs ecology games and museum installations grounded in the natural history of Aotearoa New Zealand, including Avian Age and A River Older Than Mountains."/>
+        <link rel="canonical" href="https://verteks.art/"/>
+        <link rel="icon" type="image/png" href="fav.png">
+        <link rel="apple-touch-icon" href="fav.png">
+        <meta name="theme-color" content="#4b9467"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:site_name" content="Robbie K"/>
+        <meta property="og:title" content="Robbie K | Ecology games and installations from Aotearoa"/>
+        <meta property="og:description" content="Ecology games and museum installations grounded in the natural history of Aotearoa New Zealand, including Avian Age and A River Older Than Mountains."/>
+        <meta property="og:url" content="https://verteks.art/"/>
+        <meta property="og:image" content="https://verteks.art/imgs/share.jpg"/>
+        <meta property="og:image:width" content="1200"/>
+        <meta property="og:image:height" content="630"/>
+        <meta property="og:image:alt" content="Avian Age gameplay: moa gathered around a nest in beech forest and tussock on a mountain top."/>
+        <meta name="twitter:card" content="summary_large_image"/>
         <script language="javascript" type="text/javascript" src="lib/p5.js"></script>
         <script language="javascript" type="text/javascript" src="system_settings.js"></script>
 
@@ -72,8 +86,11 @@
                 <li class="navigation__item navigation__item--active" id="nav-about">
                     <a href="#about">About</a>
                 </li>
+                <li class="navigation__item" id="nav-avian-age">
+                    <a href="#avian-age">Avian Age</a>
+                </li>
                 <li class="navigation__item" id="nav-projects">
-                    <a href="#projects-start">Projects</a>
+                    <a href="#projects">Projects</a>
                 </li>
                 <!-- <li class="navigation__item" id="nav-contact">
                     <a href="#contact">Contact</a>
@@ -163,62 +180,148 @@
             </div>
         </section>
 
-        <section class="projects" id="projects">
-            <h2 class="projects__heading section-heading" style="margin-bottom: 4rem;">Aotearoa's eco-sim game, <strong>Avian Age</strong>, is germinating here:</h2>
-            <div style="text-align: center; margin: 0 0 -10px;">
-                <a href="https://discord.gg/GZbhG9RPuY" target="_blank">
-                    <img src="imgs/discord_qr.png" alt="Discord invite QR code" width="400" height="400" style="display: block; margin: 0 auto; max-width: 90%; height: auto; background: white; padding: 8px; border-radius: 8px;"/>
-                </a>
-            </div>
-            <div style="text-align: center; margin: 20px 0;">
-                <a href="https://discord.gg/GZbhG9RPuY" target="_blank" style="text-decoration: none;">
-                    <h2 class="section-heading" style="margin: 0 0 30px; font-size: 4.5rem; color: #4b9467;">Discord</h2>
-                </a>
-                <a href="https://verteks.itch.io/avian-age-demo" target="_blank">
-                    <div class="project__live-2" style="display: inline-block;">
-                          Public Demo on itch.io (New version imminent!)
-                    </div>
-                </a>
-                <br/>
-                <a href="https://verteks.itch.io/avian-age-demo" target="_blank">
-                    <div class="project__live-2" style="display: inline-block;">
-                          Avian Age Development blog 
-                    </div>
-                </a>
-                <br/>
-                <a href="https://ruleofbirds.substack.com/" target="_blank">
-                    <div class="project__live-2" style="display: inline-block;">
-                          Mailing list for Playtests + Big updates
-                    </div>
-                </a>
+        <section class="aa" id="avian-age" aria-labelledby="aa-title">
+            <header class="aa__intro">
+                <p class="aa__eyebrow">Current focus</p>
+                <h2 class="aa__title" id="aa-title">Avian Age</h2>
+                <p class="aa__lede">
+                    A framework for digital media about the natural history of Aotearoa.
+                    Grounded in real ecology research, as well as emergent systems design principles, it features terrestrial flora and avifauna, climate and landscape. <br>I adapt this into
+                    games and installations; that teach how the native ecosystem holds together, through hands-on play.
+                </p>
+            </header>
 
-            </div>
-                
-                <!-- <a href="https://lifeinvadersocial.herokuapp.com/" target="_blank"> -->
-
-
-                    <!-- update names -->
-                    <!-- <div class="project__image-container weather">
-                        <div class="project__image-image">
-                            <img src="imgs/lifeinvader.c25acb0a33904bc4e90c656d87c651cc.png" alt=""/>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- put a project in here -->
-                 <div class="project__info">
-                    <h3 class="project__title">
-                        
-                    </h3>
-                    <p class="project__description"><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/></p>
-                    
-                    <a href="https://github.com/robin-haxx/cellVisualizer" target="_blank">
-                       
+            <article class="aa-card">
+                <div class="aa-card__media">
+                    <a class="aa-shot aa-shot--main" href="imgs/avian-age/avian-age-the-tops.jpg" target="_blank" rel="noopener">
+                        <img src="imgs/avian-age/avian-age-the-tops.jpg" width="1600" height="900" loading="lazy" decoding="async"
+                             alt="Avian Age gameplay: a top-down view of beech forest and tussock on a mountain top, with moa gathered around a nest and an eagle nearby."/>
                     </a>
-                    <br/>
+                    <ul class="aa-strip aa-strip--two">
+                        <li>
+                            <a class="aa-shot" href="imgs/avian-age/avian-age-te-whe.jpg" target="_blank" rel="noopener">
+                                <img src="imgs/avian-age/avian-age-te-whe.jpg" width="1280" height="720" loading="lazy" decoding="async"
+                                     alt="Te Whē, the mantis guide, introducing the two moa families in a dialogue panel."/>
+                            </a>
+                            <span class="aa-strip__caption">Te Whē, the mantis guide</span>
+                        </li>
+                        <li>
+                            <a class="aa-shot" href="imgs/avian-age/avian-age-hatching.jpg" target="_blank" rel="noopener">
+                                <img src="imgs/avian-age/avian-age-hatching.jpg" width="1280" height="720" loading="lazy" decoding="async"
+                                     alt="A close view of a moa nest under a storm cloud as a chick hatches."/>
+                            </a>
+                            <span class="aa-strip__caption">A chick hatches under storm cover</span>
+                        </li>
+                    </ul>
                 </div>
-                <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
-            
+                <div class="aa-card__body">
+                    <p class="aa-card__kicker">The game · In development</p>
+                    <h3 class="aa-card__title">Avian Age</h3>
+                    <p>
+                        A real-time ecosystem game set in glacial-age Aotearoa. You play a kaitiaki,
+                        a guardian, keeping moa alive on the mountain tops: growing the plants they
+                        feed on, and calling storms to hide them from the pouākai, Haast's eagle.
+                    </p>
+                    <p>
+                        Moa, eagles, kea and forest birds each live by their own rules in a running
+                        ecosystem. You have a few tools, and you learn the rest by watching what
+                        the land does through the seasons.
+                    </p>
+                    <dl class="aa-facts">
+                        <div><dt>Built with</dt><dd>JavaScript, p5.js, WebGL</dd></div>
+                        <div><dt>Status</dt><dd>Public demo, new version on the way</dd></div>
+                    </dl>
+                    <div class="aa-actions">
+                        <a class="aa-btn aa-btn--primary" href="https://verteks.itch.io/avian-age-demo" target="_blank" rel="noopener">Play the demo</a>
+                        <a class="aa-btn" href="https://ruleofbirds.blog/" target="_blank" rel="noopener">Development blog</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="aa-card aa-card--flip">
+                <div class="aa-card__media">
+                    <a class="aa-shot aa-shot--main" href="imgs/avian-age/te-manawa-902ka.jpg" target="_blank" rel="noopener">
+                        <img src="imgs/avian-age/te-manawa-902ka.jpg" width="1600" height="900" loading="lazy" decoding="async"
+                             alt="A River Older Than Mountains: an illustrated map of the Manawatū 902,000 years ago, with forest, the river, moa and other birds, and a timeline along the bottom."/>
+                    </a>
+                    <ul class="aa-strip aa-strip--three">
+                        <li>
+                            <a class="aa-shot" href="imgs/avian-age/te-manawa-2ma-strait.jpg" target="_blank" rel="noopener">
+                                <img src="imgs/avian-age/te-manawa-2ma-strait.jpg" width="1280" height="720" loading="lazy" decoding="async"
+                                     alt="The Manawatū two million years ago: open sea, the Manawatū Strait, and two low islands."/>
+                            </a>
+                            <span class="aa-strip__caption">2 million years ago: a sea strait</span>
+                        </li>
+                        <li>
+                            <a class="aa-shot" href="imgs/avian-age/te-manawa-1282ka-river.jpg" target="_blank" rel="noopener">
+                                <img src="imgs/avian-age/te-manawa-1282ka-river.jpg" width="1280" height="720" loading="lazy" decoding="async"
+                                     alt="The Manawatū 1.28 million years ago: the young river crossing low land before the ranges have risen."/>
+                            </a>
+                            <span class="aa-strip__caption">1.28 million: a river crosses the land</span>
+                        </li>
+                        <li>
+                            <a class="aa-shot" href="imgs/avian-age/te-manawa-1ma-eruption.jpg" target="_blank" rel="noopener">
+                                <img src="imgs/avian-age/te-manawa-1ma-eruption.jpg" width="1280" height="720" loading="lazy" decoding="async"
+                                     alt="Illustrated ash clouds filling the screen during the Kidnappers eruption, one million years ago."/>
+                            </a>
+                            <span class="aa-strip__caption">1 million: the Kidnappers eruption</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="aa-card__body">
+                    <p class="aa-card__kicker">Museum installation · Te Manawa, Palmerston North</p>
+                    <h3 class="aa-card__title">A River Older Than Mountains</h3>
+                    <p>
+                        An adaptation of the Avian Age framework for Te Manawa Museum. Visitors
+                        follow the Manawatū through two million years on a wall-sized living map,
+                        driven from a touchscreen beside it: a sea strait closes, a young river
+                        crosses the low land, and the Ruahine and Tararua ranges rise around a
+                        river that holds its course.
+                    </p>
+                    <p>
+                        Ice ages turn forest to tussock and back, four great eruptions reset the
+                        land, and thirteen North Island birds, from giant moa to huia, live through
+                        all of it. Visitors keep the ecosystem healthy by choosing the right plants
+                        for the climate.
+                    </p>
+                    <dl class="aa-facts">
+                        <div><dt>Format</dt><dd>4K wall, touchscreen console, runs unattended</dd></div>
+                        <div><dt>Built with</dt><dd>JavaScript, p5.js, WebGL</dd></div>
+                        <div><dt>Status</dt><dd>In final testing</dd></div>
+                    </dl>
+                    <div class="aa-actions">
+                        <a class="aa-btn" href="mailto:robbie.k.art@proton.me?subject=A%20River%20Older%20Than%20Mountains">Ask about the installation</a>
+                    </div>
+                </div>
+            </article>
+
+            <div class="aa-follow">
+                <div class="aa-follow__text">
+                    <h3 class="aa-follow__title">Follow the project</h3>
+                    <p>Playtests, devlogs and big updates. The Discord is where Avian Age is germinating.</p>
+                    <div class="aa-actions">
+                        <a class="aa-btn aa-btn--primary" href="https://discord.gg/GZbhG9RPuY" target="_blank" rel="noopener">Join the Discord</a>
+                        <a class="aa-btn" href="https://ruleofbirds.substack.com/" target="_blank" rel="noopener">Mailing list</a>
+                        <a class="aa-btn" href="https://verteks.itch.io/avian-age-demo" target="_blank" rel="noopener">itch.io page</a>
+                    </div>
+                </div>
+                <a class="aa-follow__qr" href="https://discord.gg/GZbhG9RPuY" target="_blank" rel="noopener">
+                    <img src="imgs/discord_qr.png" width="132" height="132" loading="lazy" alt="QR code for the Avian Age Discord invite"/>
+                    <span>Scan for Discord</span>
+                </a>
+            </div>
+
+            <p class="aa__related">
+                Also from the Avian Age world:
+                <a href="#spirit-feathers">Spirit Feathers</a>,
+                <a href="#moa-diagram">the moa diagram</a> and
+                <a href="#crystal-kowhai">Crystal Kowhai</a>.
+            </p>
+        </section>
+
+        <section class="projects" id="projects">
+            <h2 class="aa__title aa__title--minor">More projects</h2>
+
                 <div class="project__info">
                     <h3 class="project__title">
                         Cell Visualizer<br/>JavaScript + p5.js system
@@ -253,7 +356,7 @@
             <br/>
 
             
-            <div class="project project-right" id="projects-start">
+            <div class="project project-right" id="spirit-feathers">
                 <a href="https://verteks.itch.io/spirit-feathers" target="_blank">
                     <div class="project__image-container retro">
                         <div class="project__image-image">
@@ -302,7 +405,7 @@
             
 
 
-            <div class="project project-left">
+            <div class="project project-left" id="moa-diagram">
                 <a href="https://23-mddn342.github.io/randomised-collection-robin-haxx/index.html" target="_blank">
                     <div class="project__image-container retro">
                         <div class="project__image-image">
@@ -398,7 +501,7 @@
 
 
 
-            <div class="project project-right">
+            <div class="project project-right" id="crystal-kowhai">
                 <div class="project__info">
                     <h3 class="project__title">
                         Crystal Kowhai:<br/>Digital Illustration
